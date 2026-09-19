@@ -7,14 +7,18 @@ import { DashboardLayout } from '../layouts/DashboardLayout';
 // Guards
 import { ProtectedRoute } from './ProtectedRoute';
 
-// Dummy/Module Page Imports
-const LoginPage = () => <h2>Login Page</h2>;
-const RegisterPage = () => <h2>Register Page</h2>;
-const DashboardPage = () => <h2>Dashboard Home</h2>;
-const InventoryPage = () => <h2>Inventory Management</h2>;
-const SalesPage = () => <h2>Sales Management</h2>;
-const UnauthorizedPage = () => <h2>403 - Access Denied</h2>;
-const NotFoundPage = () => <h2>404 - Page Not Found</h2>;
+// Module Pages
+import { LoginPage } from '../modules/auth/pages/LoginPage';
+import { RegisterPage } from '../modules/auth/pages/RegisterPage';
+import { VerifyOtpPage } from '../modules/auth/pages/VerifyOtpPage';
+import { DashboardPage } from '../modules/dashboard/pages/DashboardPage';
+import { InventoryPage } from '../modules/inventory/pages/InventoryPage';
+import { SalesPage } from '../modules/sales/pages/SalesPage';
+import { SelectOrgPage } from '../modules/organization/pages/SelectOrgPage';
+
+// Common Error Pages
+import { UnauthorizedPage } from '../pages/UnauthorizedPage';
+import { NotFoundPage } from '../pages/NotFoundPage';
 
 export const AppRoutes = () => {
   return (
@@ -23,16 +27,22 @@ export const AppRoutes = () => {
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/verify-otp" element={<VerifyOtpPage />} />
       </Route>
 
-      {/* Protected ERP Routes */}
+      {/* Workspace Selection Page (Requires Auth Token, but does not require an active org header) */}
+      <Route element={<ProtectedRoute requireOrg={false} />}>
+        <Route path="/select-org" element={<SelectOrgPage />} />
+      </Route>
+
+      {/* Protected ERP Routes (Requires Auth Token + Active Org) */}
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/inventory" element={<InventoryPage />} />
-          
-          {/* Role-restricted Route Example */}
-          <Route element={<ProtectedRoute allowedRoles={['admin', 'manager']} />}>
+
+          {/* Role-restricted Route (Aligned with Mongoose Enum: 'OWNER', 'MANAGER') */}
+          <Route element={<ProtectedRoute allowedRoles={['OWNER', 'MANAGER']} />}>
             <Route path="/sales" element={<SalesPage />} />
           </Route>
         </Route>

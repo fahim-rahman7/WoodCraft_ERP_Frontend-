@@ -9,8 +9,8 @@ export const AuthLayout = () => {
   }
 
   return (
-    <div className="auth-layout-container" style={{ display: 'grid', placeItems: 'center', minHeight: '100vh' }}>
-      <div className="auth-card">
+    <div className="min-h-screen grid place-items-center bg-slate-50 p-4">
+      <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-sm border border-slate-200">
         <Outlet />
       </div>
     </div>
