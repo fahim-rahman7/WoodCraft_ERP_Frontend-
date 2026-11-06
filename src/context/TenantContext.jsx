@@ -24,7 +24,7 @@ export const TenantProvider = ({ children }) => {
     staleTime: 1000 * 60 * 5,
   });
 
-  // 3. Current active organization khunje ber kora (Shohoj 1 line code)
+  // 3. Current active organization khunje ber kora
   const currentOrg = userMemberships.find(
     (org) => String(org._id) === String(activeOrgId)
   ) || null;

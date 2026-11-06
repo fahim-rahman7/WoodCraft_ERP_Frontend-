@@ -16,6 +16,9 @@ import { InventoryPage } from '../modules/inventory/pages/InventoryPage';
 import { SalesPage } from '../modules/sales/pages/SalesPage';
 import { SelectOrgPage } from '../modules/organization/pages/SelectOrgPage';
 
+// Invitation Page (Module page)
+import { AcceptInvitationPage } from '../pages/AcceptInvitationPage';
+import { BillingPage } from '../modules/billing/pages/BillingPage';
 // Common Error Pages
 import { UnauthorizedPage } from '../pages/UnauthorizedPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
@@ -30,6 +33,9 @@ export const AppRoutes = () => {
         <Route path="/verify-otp" element={<VerifyOtpPage />} />
       </Route>
 
+      {/* Public Invitation Accept Route (Token diye access korbe, login thaka mandatory na) */}
+      <Route path="/accept-invitation" element={<AcceptInvitationPage />} />
+
       {/* Workspace Selection Page (Requires Auth Token, but does not require an active org header) */}
       <Route element={<ProtectedRoute requireOrg={false} />}>
         <Route path="/select-org" element={<SelectOrgPage />} />
@@ -40,7 +46,8 @@ export const AppRoutes = () => {
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/inventory" element={<InventoryPage />} />
-
+          {/* Billing & Subscription Route */}
+          <Route path="/billing" element={<BillingPage />} />
           {/* Role-restricted Route (Aligned with Mongoose Enum: 'OWNER', 'MANAGER') */}
           <Route element={<ProtectedRoute allowedRoles={['OWNER', 'MANAGER']} />}>
             <Route path="/sales" element={<SalesPage />} />
