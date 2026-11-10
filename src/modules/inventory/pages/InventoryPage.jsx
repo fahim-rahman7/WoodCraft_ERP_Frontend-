@@ -14,7 +14,7 @@ export const InventoryPage = () => {
       try {
         setLoading(true);
         // ব্যাকএন্ডের স্টক এন্ডপয়েন্ট কল করা হচ্ছে
-        const res = await api.get('/inventory/stocks', {
+        const res = await api.get('/inventory/stocks/summary', {
           headers: { 'x-organization-id': currentOrg._id },
         });
         setStocks(res.data.data || []);
