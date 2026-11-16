@@ -4,6 +4,53 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTenant } from '../../../context/TenantContext';
 import { useLogout } from '../../auth/hooks/useAuthMutations';
 import api from '../../../api/axios';
+import {
+  ArrowRight,
+  Building2,
+  Factory,
+  Hash,
+  Landmark,
+  LogOut,
+  Plus,
+  Warehouse,
+} from 'lucide-react';
+
+// ---------- Presentation helpers (design only) ----------
+
+const PLAN_STYLES = {
+  PRO: {
+    label: 'Pro Plan',
+    badge: 'bg-[#3b2213] text-white',
+    tile: 'bg-[#3b2213] text-white',
+    icon: Factory,
+  },
+  ENTERPRISE: {
+    label: 'Enterprise',
+    badge: 'bg-[#2b2522] text-white',
+    tile: 'bg-[#2b2522] text-white',
+    icon: Landmark,
+  },
+  FREE: {
+    label: 'Free Plan',
+    badge: 'bg-[#ece3d8] text-[#5a3e2b]',
+    tile: 'bg-[#f1e9df] text-[#3b2213] border border-[#e2d6c8]',
+    icon: Warehouse,
+  },
+};
+
+const STATUS_DOT = {
+  ACTIVE: 'bg-emerald-500',
+  PAST_DUE: 'bg-amber-500',
+  CANCELLED: 'bg-red-500',
+  EXPIRED: 'bg-red-500',
+};
+
+const formatDate = (value) => {
+  if (!value) return '—';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '—';
+  return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+};
 
 export const SelectOrgPage = () => {
   const navigate = useNavigate();
@@ -67,125 +114,257 @@ export const SelectOrgPage = () => {
     createOrgMutation.mutate(orgName.trim());
   };
 
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-6 relative">
-      
-      {/* Top Header with Logout */}
-      <div className="absolute top-6 right-8">
-        <button
-          onClick={() => logout()}
-          disabled={isLoggingOut}
-          className="px-4 py-2 bg-transparent border border-slate-300 hover:bg-slate-100 rounded-md text-slate-600 hover:text-slate-900 cursor-pointer text-sm font-medium transition-colors"
-        >
-          {isLoggingOut ? 'Logging out...' : 'Log Out'}
-        </button>
-      </div>
+  const workspaceCount = userMemberships.length;
 
-      {/* Main Card Container */}
-      <div className="w-full max-w-[520px] bg-white border border-slate-200 rounded-xl p-8 shadow-sm">
-        <h2 className="text-xl font-bold text-slate-900 mb-1">
-          Select Workspace
-        </h2>
-        <p className="text-slate-500 text-sm mb-8">
-          Choose an organization to continue or create a new workspace.
-        </p>
+  return (
+    <div className="min-h-screen bg-[#f7f3ee] px-4 py-6 sm:px-6 sm:py-8">
+      <div className="mx-auto w-full max-w-5xl">
+        {/* Top bar with Logout */}
+        <div className="flex justify-end">
+          <button
+            onClick={() => logout()}
+            disabled={isLoggingOut}
+            className="inline-flex items-center gap-2 rounded-md border border-[#e2d6c8] bg-white/70 px-3.5 py-2 text-sm font-medium text-[#5a3e2b] transition-colors hover:bg-white hover:text-[#2a1a10] disabled:opacity-50 cursor-pointer"
+          >
+            <LogOut className="h-4 w-4" />
+            {isLoggingOut ? 'Logging out...' : 'Log Out'}
+          </button>
+        </div>
+
+        {/* Page Header */}
+        <header className="mt-6 mb-10 text-center sm:mt-8">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#ece3d8] px-3 py-1 font-serif text-[10px] font-bold uppercase tracking-[0.12em] text-[#5a3e2b]">
+            <Building2 className="h-3 w-3" />
+            Tenant Portal · Select Workspace
+          </span>
+
+          <h1 className="mt-4 font-serif text-3xl font-bold text-[#2a1a10] sm:text-4xl">
+            Choose an organization
+          </h1>
+          <p className="mx-auto mt-2 max-w-xl text-sm text-[#6b5d52]">
+            Select an enterprise workspace to access factory operations, telemetry, and inventory
+            records.
+          </p>
+
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 font-serif text-[10px] uppercase tracking-[0.12em] text-[#8a7b6f]">
+            <span className="inline-flex items-center gap-1.5 rounded bg-[#ece3d8] px-2 py-1 text-[#5a3e2b]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#7a4a2a]" />
+              Session: Active
+            </span>
+            <span className="text-[#c9b9a8]">•</span>
+            <span>
+              {isLoadingOrgs
+                ? 'Loading workspaces...'
+                : `${workspaceCount} ${workspaceCount === 1 ? 'Workspace' : 'Workspaces'} Available`}
+            </span>
+          </div>
+        </header>
 
         {errorMsg && (
-          <div className="text-red-600 bg-red-50 border border-red-200 p-3 rounded-md mb-6 text-sm">
+          <div className="mx-auto mb-6 max-w-lg rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
             {errorMsg}
           </div>
         )}
 
         {/* Loading State */}
         {isLoadingOrgs ? (
-          <div className="text-center py-8 text-slate-500 text-sm">
-            Loading workspaces...
+          <div className="grid gap-5 md:grid-cols-2">
+            {[0, 1].map((n) => (
+              <div
+                key={n}
+                className="animate-pulse rounded-xl border border-[#ece4da] bg-white p-6"
+              >
+                <div className="flex gap-2">
+                  <div className="h-5 w-16 rounded bg-[#efe7dd]" />
+                  <div className="h-5 w-14 rounded bg-[#efe7dd]" />
+                </div>
+                <div className="mt-5 flex items-center gap-3">
+                  <div className="h-11 w-11 rounded-md bg-[#efe7dd]" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-2/3 rounded bg-[#efe7dd]" />
+                    <div className="h-3 w-1/3 rounded bg-[#f3ede6]" />
+                  </div>
+                </div>
+                <div className="mt-5 h-20 rounded-lg bg-[#f6f0e9]" />
+                <div className="mt-5 flex items-center justify-between">
+                  <div className="h-3 w-24 rounded bg-[#f3ede6]" />
+                  <div className="h-9 w-28 rounded-md bg-[#efe7dd]" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : isCreating ? (
+          /* Create Workspace Form */
+          <div className="mx-auto w-full max-w-lg rounded-xl border border-[#ece4da] bg-white p-6 shadow-[0_1px_2px_rgba(60,35,20,0.06)] sm:p-8">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#efe5da] text-[#3b2213]">
+                <Plus className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="font-serif text-xl font-bold text-[#2a1a10]">
+                  Create new organization
+                </h2>
+                <p className="text-sm text-[#6b5d52]">
+                  Set up a dedicated workspace with its own inventory ledger.
+                </p>
+              </div>
+            </div>
+
+            <form onSubmit={handleCreateSubmit} className="mt-6 flex flex-col gap-4">
+              <div>
+                <label className="mb-1.5 block font-serif text-[11px] font-bold uppercase tracking-[0.1em] text-[#5a3e2b]">
+                  Organization Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Acme Timber Co."
+                  value={orgName}
+                  onChange={(e) => setOrgName(e.target.value)}
+                  className="w-full rounded-md border border-[#ddd0c1] bg-[#fdfbf8] px-3.5 py-2.5 text-sm text-[#2a1a10] placeholder:text-[#a89888] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#7a4a2a]"
+                />
+              </div>
+
+              <div className="mt-2 flex gap-3">
+                <button
+                  type="submit"
+                  disabled={createOrgMutation.isPending}
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-md bg-[#3b2213] py-2.5 font-serif text-sm font-bold text-white transition-colors hover:bg-[#4d2e1a] disabled:opacity-50 cursor-pointer"
+                >
+                  {createOrgMutation.isPending ? 'Creating...' : 'Create Workspace'}
+                  {!createOrgMutation.isPending && (
+                    <ArrowRight className="h-4 w-4" />
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsCreating(false);
+                    setErrorMsg('');
+                  }}
+                  className="rounded-md bg-[#efe7dd] px-5 py-2.5 font-serif text-sm font-bold text-[#3b2213] transition-colors hover:bg-[#e6dccf] cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
         ) : (
-          <>
-            {/* List of Existing Workspaces */}
-            {userMemberships.length > 0 && !isCreating && (
-              <div className="flex flex-col gap-3 mb-6">
-                {userMemberships.map((item) => {
-                  const org = item.organizationId || item.organization || item;
-                  const orgId = typeof org === 'object' ? (org._id || org.id) : org;
-                  const orgNameDisplay = org?.name || item.name || 'Unnamed Organization';
-                  const roleDisplay = item.myRole || item.role || 'MEMBER';
-                  const statusDisplay = org?.subscriptionStatus || 'ACTIVE';
+          /* Workspace Grid */
+          <div className="grid gap-5 md:grid-cols-2">
+            {userMemberships.map((item) => {
+              const org = item.organizationId || item.organization || item;
+              const orgId = typeof org === 'object' ? (org._id || org.id) : org;
+              const orgNameDisplay = org?.name || item.name || 'Unnamed Organization';
+              const roleDisplay = item.myRole || item.role || 'MEMBER';
+              const statusDisplay = org?.subscriptionStatus || 'ACTIVE';
+              const plan = PLAN_STYLES[org?.plan] || PLAN_STYLES.FREE;
 
-                  return (
-                    <div
-                      key={orgId || Math.random()}
-                      onClick={() => handleSelect(orgId)}
-                      className="p-4 border border-slate-200 hover:border-blue-600 rounded-lg cursor-pointer flex justify-between items-center transition-colors bg-white group"
-                    >
-                      <div>
-                        <div className="font-semibold text-slate-900 text-[15px] group-hover:text-blue-600 transition-colors">
-                          {orgNameDisplay}
-                        </div>
-                        <div className="text-xs text-slate-500 mt-0.5">
-                          Role: <span className="capitalize font-medium text-slate-700">{roleDisplay.toLowerCase()}</span>
-                        </div>
-                      </div>
-                      <span className="text-xs px-2 py-1 rounded bg-slate-100 text-slate-600 font-medium uppercase tracking-wide">
-                        {statusDisplay}
+              return (
+                <div
+                  key={orgId || Math.random()}
+                  onClick={() => handleSelect(orgId)}
+                  className="group flex cursor-pointer flex-col rounded-xl border border-[#ece4da] bg-white p-5 shadow-[0_1px_2px_rgba(60,35,20,0.06)] transition-all hover:-translate-y-0.5 hover:border-[#d9cbbb] hover:shadow-md sm:p-6"
+                >
+                  {/* Badges */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex flex-wrap gap-1.5">
+                      <span
+                        className={`rounded px-2 py-0.5 font-serif text-[10px] font-bold uppercase tracking-[0.1em] ${plan.badge}`}
+                      >
+                        {plan.label}
+                      </span>
+                      <span className="rounded border border-[#e2d6c8] bg-[#f6f0e9] px-2 py-0.5 font-serif text-[10px] font-bold uppercase tracking-[0.1em] text-[#3b2213]">
+                        {roleDisplay}
                       </span>
                     </div>
-                  );
-                })}
-              </div>
-            )}
+                    <span className="inline-flex shrink-0 items-center gap-1.5 rounded border border-[#ece4da] bg-[#faf7f3] px-2 py-0.5 font-serif text-[10px] uppercase tracking-[0.1em] text-[#6b5d52]">
+                      <span
+                        className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[statusDisplay] || 'bg-slate-400'}`}
+                      />
+                      {statusDisplay.replace('_', ' ')}
+                    </span>
+                  </div>
 
-            {/* Create Workspace Section */}
-            {isCreating ? (
-              <form onSubmit={handleCreateSubmit} className="flex flex-col gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                    Organization Name
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Acme Timber Co."
-                    value={orgName}
-                    onChange={(e) => setOrgName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-md border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
+                  {/* Identity */}
+                  <div className="mt-4 flex items-center gap-3">
+                    <div
+                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md ${plan.tile}`}
+                    >
+                      <plan.icon className="h-5 w-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="truncate font-serif text-lg font-bold text-[#2a1a10] transition-colors group-hover:text-[#7a4a2a]">
+                        {orgNameDisplay}
+                      </h3>
+                      {orgId && (
+                        <p className="mt-0.5 flex items-center gap-1 text-xs text-[#8a7b6f]">
+                          <Hash className="h-3 w-3" />
+                          Workspace {String(orgId).slice(-6).toUpperCase()}
+                        </p>
+                      )}
+                    </div>
+                  </div>
 
-                <div className="flex gap-3 mt-2">
-                  <button
-                    type="submit"
-                    disabled={createOrgMutation.isPending}
-                    className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-md font-medium text-sm transition-colors cursor-pointer"
-                  >
-                    {createOrgMutation.isPending ? 'Creating...' : 'Create Workspace'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsCreating(false);
-                      setErrorMsg('');
-                    }}
-                    className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-md font-medium text-sm transition-colors cursor-pointer"
-                  >
-                    Cancel
-                  </button>
+                  {/* Details Panel */}
+                  <div className="mt-4 grid grid-cols-2 gap-4 rounded-lg bg-[#f6f0e9] p-4">
+                    <div>
+                      <p className="font-serif text-[10px] font-bold uppercase tracking-[0.1em] text-[#5a3e2b]">
+                        Subscription
+                      </p>
+                      <p className="mt-1 font-serif text-sm font-bold capitalize text-[#2a1a10]">
+                        {statusDisplay.replace('_', ' ').toLowerCase()}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="font-serif text-[10px] font-bold uppercase tracking-[0.1em] text-[#5a3e2b]">
+                        Established
+                      </p>
+                      <p className="mt-1 font-serif text-sm font-bold text-[#2a1a10]">
+                        {formatDate(org?.createdAt)}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="mt-auto flex justify-end pt-5">
+                    <button
+                      type="button"
+                      className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md bg-[#3b2213] px-4 py-2.5 font-serif text-sm font-bold text-white transition-colors group-hover:bg-[#4d2e1a] cursor-pointer"
+                    >
+                      Open Workspace
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
-              </form>
-            ) : (
-              <button
-                onClick={() => setIsCreating(true)}
-                className={`w-full p-3 rounded-lg font-medium text-sm transition-colors cursor-pointer ${
-                  userMemberships.length === 0
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                    : 'bg-transparent text-blue-600 hover:bg-blue-50 border border-dashed border-blue-600'
-                }`}
-              >
-                + Create New Workspace
-              </button>
-            )}
-          </>
+              );
+            })}
+
+            {/* Create New Organization Tile */}
+            <button
+              type="button"
+              onClick={() => setIsCreating(true)}
+              className={`group flex min-h-[260px] flex-col items-center justify-center rounded-xl border border-dashed border-[#e2d6c8] bg-transparent p-6 text-center transition-colors hover:border-[#c9b39c] hover:bg-white/60 cursor-pointer ${
+                workspaceCount === 0 ? 'md:col-span-2' : ''
+              }`}
+            >
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#ece3d8] text-[#3b2213] transition-transform group-hover:scale-105">
+                <Plus className="h-5 w-5" />
+              </span>
+              <span className="mt-4 font-serif text-lg font-bold text-[#2a1a10]">
+                + Create new organization
+              </span>
+              <span className="mt-1.5 max-w-xs text-sm text-[#6b5d52]">
+                {workspaceCount === 0
+                  ? "You're not part of any workspace yet. Set one up to get started."
+                  : 'Set up a new factory or timber enterprise workspace with dedicated inventory ledger.'}
+              </span>
+              <span className="mt-4 inline-flex items-center gap-1.5 font-serif text-sm font-bold text-[#5a3e2b] group-hover:text-[#2a1a10]">
+                Register New Facility
+                <ArrowRight className="h-4 w-4" />
+              </span>
+            </button>
+          </div>
         )}
       </div>
     </div>
