@@ -41,7 +41,8 @@ export const useLogout = () => {
         queryClient.clear();
   
         // 3. Redirect to login page
-        navigate('/login', { replace: true });
+        // navigate('/login', { replace: true });
+        window.location.replace('/login')
       },
     });
   };
