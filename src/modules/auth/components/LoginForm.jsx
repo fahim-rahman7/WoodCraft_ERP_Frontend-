@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLogin } from '../hooks/useLogin';
+import { useLogin } from '../hooks/useAuthMutations';
 
 export const LoginForm = () => {
   const [email, setEmail] = useState('');

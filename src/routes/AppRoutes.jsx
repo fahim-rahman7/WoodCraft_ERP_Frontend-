@@ -22,6 +22,8 @@ import { BillingPage } from '../modules/billing/pages/BillingPage';
 // Common Error Pages
 import { UnauthorizedPage } from '../pages/UnauthorizedPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
+import { ForgotPassword } from '../modules/auth/pages/forgetPassword';
+import { ResetPasswordPage } from '../modules/auth/pages/ResetPasswordPage';
 
 export const AppRoutes = () => {
   return (
@@ -31,6 +33,8 @@ export const AppRoutes = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify-otp" element={<VerifyOtpPage />} />
+        <Route path='/forget-pass' element={<ForgotPassword/>}/>
+        <Route path='/reset-password' element={<ResetPasswordPage/>}/>
       </Route>
 
       {/* Public Invitation Accept Route (Token diye access korbe, login thaka mandatory na) */}

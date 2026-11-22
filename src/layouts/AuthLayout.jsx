@@ -9,8 +9,8 @@ export const AuthLayout = () => {
   }
 
   return (
-    <div className="min-h-screen grid place-items-center bg-slate-50 p-4">
-      <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-sm border border-slate-200">
+    <div className="min-h-screen grid place-items-center bg-slate-50 ">
+      <div className="w-full">
         <Outlet />
       </div>
     </div>
