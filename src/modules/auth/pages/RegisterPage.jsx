@@ -1,85 +1,200 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useRegister } from '../hooks/useAuthMutations';
+import {
+  User,
+  Mail,
+  Building2,
+  ChevronDown,
+  ShieldCheck,
+  Gauge,
+  QrCode,
+  Warehouse,
+} from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthPageShell } from '../components/AuthPageShell';
+import { AuthBrandPanel } from '../components/AuthBrandPanel';
+import { AuthCard } from '../components/AuthCard';
+import { AuthInput } from '../components/AuthInput';
+import { PasswordInput } from '../components/PasswordInput';
+import { AuthCheckbox } from '../components/AuthCheckbox';
+import { AuthAlert } from '../components/AuthAlert';
+import { AuthSubmitButton } from '../components/AuthSubmitButton';
+import { PasswordStrengthMeter } from '../components/PasswordStrengthMeter';
+import { useRegister } from '../hooks/useRegister';
+
+const FEATURES = [
+  {
+    icon: Gauge,
+    title: 'Precision Kiln & Moisture Tracking',
+    description:
+      'Real-time moisture content sensor telemetry from green log to kiln-cured specs across automated kilns.',
+    badge: '10% MC',
+  },
+  {
+    icon: QrCode,
+    title: 'End-to-End Batch Traceability',
+    description:
+      'Trace CFT volumes, saw log allocations, and cutting tickets down to individual joinery work orders.',
+    badge: 'CFT Ledger',
+  },
+  {
+    icon: Warehouse,
+    title: 'Multi-Yard & Depot Inventory',
+    description:
+      'Live ledger for raw logs, planed teak, sheesham planks, brass fittings, and dispatch shipments.',
+    badge: 'DAC / CTG',
+  },
+];
 
 export const RegisterPage = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const navigate = useNavigate();
-  const { mutate: register, isPending, error } = useRegister();
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [assignedFacility, setAssignedFacility] = useState('DHK-02');
+  const [password, setPassword] = useState('');
+  const [agreeTerms, setAgreeTerms] = useState(true);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const { mutate: register, isPending } = useRegister();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    register(formData, {
-      onSuccess: () => {
-        // Pass email in router state so VerifyOtpPage can pre-fill it
-        navigate('/verify-otp', { state: { email: formData.email }, replace: true });
-      },
-    });
+    if (!agreeTerms) return;
+    setErrorMsg('');
+
+    register(
+      { name: fullName, email, password },
+      {
+        onSuccess: () => {
+          // Move the new operator to the OTP verification step
+          navigate(`/verify-otp?email=${encodeURIComponent(email)}`, { replace: true });
+        },
+        onError: (err) => {
+          setErrorMsg(
+            err.response?.data?.message || err.message || 'Registration failed. Please try again.'
+          );
+        },
+      }
+    );
   };
 
-  const errorMessage =
-    error?.response?.data?.message || (error ? 'Registration failed. Try again.' : '');
-
   return (
-    <div className="w-full max-w-[400px] p-8 border border-slate-200 rounded-xl bg-white shadow-sm">
-      <h2 className="text-2xl font-bold text-slate-900 mb-1">Create Account</h2>
-      <p className="text-slate-500 text-sm mb-6">Join Woodcraft ERP</p>
-
-      {errorMessage && (
-        <div className="text-red-600 bg-red-50 border border-red-200 p-3 rounded-md mb-4 text-sm">
-          {errorMessage}
+    <AuthPageShell
+      brand={
+        <AuthBrandPanel
+          subtitle="TIMBER OS • PLANT OPS"
+          features={FEATURES}
+          footerLeft="Dhaka Plant #02 & Central Depots"
+          footerRight="Encrypted TLS 1.3 Certified"
+        />
+      }
+    >
+      <AuthCard maxWidth="max-w-[530px]">
+        {/* Header badge */}
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#ebdccd]/50 text-[#543b2a] text-[11px] font-semibold tracking-wide border border-[#ddcaa8]/50">
+          <ShieldCheck className="w-3.5 h-3.5 text-[#8b5a2b]" />
+          OPERATOR & MANAGEMENT PORTAL
         </div>
-      )}
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
-          <input
+        {/* Title */}
+        <div className="mt-4">
+          <h2 className="text-2xl font-bold tracking-tight text-[#2b170e]">Create your account</h2>
+          <p className="mt-1 text-xs text-[#715440] leading-relaxed">
+            Set up your operator or managerial credentials for WoodCraft ERP.
+          </p>
+        </div>
+
+        {errorMsg && (
+          <AuthAlert variant="error" className="mt-5">
+            {errorMsg}
+          </AuthAlert>
+        )}
+
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <AuthInput
+            label="Full Name"
+            icon={User}
+            labelRight="(min 4 characters)"
             type="text"
             required
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
+            minLength={4}
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            hint="Must be at least 4 characters as registered in HR payroll."
+            placeholder="Tariqul Islam"
           />
-        </div>
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
-          <input
+          <AuthInput
+            label="Work Email"
+            icon={Mail}
+            labelRight="Corporate ID"
             type="email"
             required
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            inputClassName="font-mono"
+            placeholder="e.g. tariqul@bengaltimber.com"
           />
+
+          <AuthInput
+            as="select"
+            label="Assigned Facility / Plant"
+            icon={Building2}
+            value={assignedFacility}
+            onChange={(e) => setAssignedFacility(e.target.value)}
+            inputClassName="text-xs font-medium appearance-none"
+            trailing={
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#8c6b53]">
+                <ChevronDown className="w-4 h-4" />
+              </div>
+            }
+          >
+            <option value="DHK-02">Dhaka Plant #02 (Savar Industrial Area)</option>
+            <option value="CTG-01">Chittagong Sawmill & Export Terminal (CTG-01)</option>
+            <option value="SYL-01">Sylhet Hardwood Reserve Depot (SYL-01)</option>
+          </AuthInput>
+
+          <div>
+            <PasswordInput
+              label="Password"
+              labelRight="(min 6 characters)"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              placeholder="••••••••••••"
+            />
+            <PasswordStrengthMeter password={password} />
+            <p className="mt-1 text-[11px] text-[#8c7462]">
+              Minimum 6 characters. Use letters, numbers, and symbols.
+            </p>
+          </div>
+
+          <div className="pt-1">
+            <AuthCheckbox checked={agreeTerms} onChange={setAgreeTerms}>
+              I agree to the{' '}
+              <a href="#terms" className="font-semibold text-[#3b1e0f] underline hover:text-[#4a2a17]">
+                Factory Operating Terms
+              </a>{' '}
+              &amp;{' '}
+              <a href="#security" className="font-semibold text-[#3b1e0f] underline hover:text-[#4a2a17]">
+                Data Security Protocol
+              </a>
+              .
+            </AuthCheckbox>
+          </div>
+
+          <AuthSubmitButton loading={isPending} disabled={!agreeTerms} className="mt-2">
+            Create account
+          </AuthSubmitButton>
+        </form>
+
+        <div className="mt-6 text-center text-xs text-[#523c2d]">
+          <span>Already registered? </span>
+          <Link to="/login" className="font-bold text-[#4a2a17] hover:underline">
+            Log in
+          </Link>
         </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
-          <input
-            type="password"
-            required
-            value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={isPending}
-          className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-medium rounded-md text-sm transition-colors cursor-pointer mt-1"
-        >
-          {isPending ? 'Registering...' : 'Register'}
-        </button>
-      </form>
-
-      <p className="mt-6 text-center text-sm text-slate-600">
-        Already registered?{' '}
-        <Link to="/login" className="text-emerald-600 hover:text-emerald-700 font-medium underline">
-          Sign in
-        </Link>
-      </p>
-    </div>
+      </AuthCard>
+    </AuthPageShell>
   );
 };
