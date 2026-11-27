@@ -12,7 +12,7 @@ import { LoginPage } from '../modules/auth/pages/LoginPage';
 import { RegisterPage } from '../modules/auth/pages/RegisterPage';
 import { VerifyOtpPage } from '../modules/auth/pages/VerifyOtpPage';
 import { DashboardPage } from '../modules/dashboard/pages/DashboardPage';
-import { InventoryPage } from '../modules/inventory/pages/InventoryPage';
+import { StocksPage } from '../modules/inventory/pages/StocksPage';
 import { SalesPage } from '../modules/sales/pages/SalesPage';
 import { SelectOrgPage } from '../modules/organization/pages/SelectOrgPage';
 
@@ -45,7 +45,7 @@ export const AppRoutes = () => {
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/inventory" element={<InventoryPage />} />
+          <Route path="/inventory" element={<StocksPage />} />
           {/* Billing & Subscription Route */}
           <Route path="/billing" element={<BillingPage />} />
           {/* Role-restricted Route (Aligned with Mongoose Enum: 'OWNER', 'MANAGER') */}
