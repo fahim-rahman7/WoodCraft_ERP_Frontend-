@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import {
   CalendarPlus,
   ChevronDown,
@@ -276,6 +276,9 @@ export const SuppliersPage = () => {
           </>
         )}
       </section>
+
+      {/* Child route: /suppliers/add (Add Supplier slide-over) */}
+      <Outlet />
     </DashboardShell>
   );
 };

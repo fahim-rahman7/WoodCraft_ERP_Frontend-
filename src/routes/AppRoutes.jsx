@@ -23,7 +23,7 @@ import { BillingPage } from '../modules/billing/pages/BillingPage';
 import { UnauthorizedPage } from '../pages/UnauthorizedPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { SuppliersPage } from '../modules/procurement/suppliers/pages/SuppliersPage';
-import AddSupplierPage from '../modules/procurement/suppliers/pages/AddSupplierPage';
+import { AddSupplierPage } from '../modules/procurement/suppliers/pages/AddSupplierPage';
 
 export const AppRoutes = () => {
   return (
@@ -47,8 +47,10 @@ export const AppRoutes = () => {
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/suppliers" element={<SuppliersPage />} />
-          <Route path="/suppliers/add" element={<AddSupplierPage />} />
+          {/* Add Supplier opens as a slide-over on top of the Suppliers list */}
+          <Route path="/suppliers" element={<SuppliersPage />}>
+            <Route path="add" element={<AddSupplierPage />} />
+          </Route>
           <Route path="/inventory" element={<StocksPage />} />
           {/* Billing & Subscription Route */}
           <Route path="/billing" element={<BillingPage />} />

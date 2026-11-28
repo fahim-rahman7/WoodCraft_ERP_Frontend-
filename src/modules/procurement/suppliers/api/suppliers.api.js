@@ -8,3 +8,11 @@ export const getSuppliers = async ({ orgId, params } = {}) => {
   });
   return res.data;
 };
+
+// -----create supplier
+export const createSupplier = async ({ orgId, data }) => {
+  const res = await api.post('/procurement/suppliers', data, {
+    headers: { 'x-organization-id': orgId },
+  });
+  return res.data;
+};
