@@ -1,9 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   CalendarPlus,
   ChevronDown,
   CircleCheck,
   CirclePause,
+  CirclePlus,
+  Download,
   FilterX,
   Mail,
   MapPin,
@@ -15,6 +18,7 @@ import {
 import { useTenant } from '../../../../context/TenantContext';
 import { useSuppliers } from '../hooks/suppliers.hooks';
 import {
+  ActionButton,
   DashboardShell,
   EmptyState,
   MetricCard,
@@ -43,6 +47,7 @@ const selectClass =
   'w-full cursor-pointer appearance-none rounded-md border border-[#e2d6c8] bg-white py-2 pl-3 pr-8 text-xs font-medium text-[#2a1a10] focus:outline-none focus:ring-2 focus:ring-[#7a4a2a]';
 
 export const SuppliersPage = () => {
+  const navigate = useNavigate();
   const { currentOrg } = useTenant();
   const { data: suppliers = [], isPending, isError } = useSuppliers(currentOrg?._id);
 
@@ -76,6 +81,17 @@ export const SuppliersPage = () => {
         tag="Suppliers"
         title="Suppliers"
         subtitle={`Manage raw timber concessionaires, hardware distributors and chemical suppliers for ${currentOrg?.name || 'your workspace'}.`}
+        actions={
+          <>
+            {/* Export: শুধু ডিজাইন, এখনো কোনো কাজ যুক্ত হয়নি */}
+            <ActionButton variant="secondary" icon={Download}>
+              Export Directory
+            </ActionButton>
+            <ActionButton icon={CirclePlus} onClick={() => navigate('/suppliers/add')}>
+              Add Supplier
+            </ActionButton>
+          </>
+        }
       />
 
       {/* Summary cards */}

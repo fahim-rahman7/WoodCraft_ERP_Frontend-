@@ -23,6 +23,7 @@ import { BillingPage } from '../modules/billing/pages/BillingPage';
 import { UnauthorizedPage } from '../pages/UnauthorizedPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { SuppliersPage } from '../modules/procurement/suppliers/pages/SuppliersPage';
+import AddSupplierPage from '../modules/procurement/suppliers/pages/AddSupplierPage';
 
 export const AppRoutes = () => {
   return (
@@ -47,6 +48,7 @@ export const AppRoutes = () => {
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/suppliers" element={<SuppliersPage />} />
+          <Route path="/suppliers/add" element={<AddSupplierPage />} />
           <Route path="/inventory" element={<StocksPage />} />
           {/* Billing & Subscription Route */}
           <Route path="/billing" element={<BillingPage />} />
