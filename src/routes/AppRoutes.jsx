@@ -22,7 +22,7 @@ import { BillingPage } from '../modules/billing/pages/BillingPage';
 // Common Error Pages
 import { UnauthorizedPage } from '../pages/UnauthorizedPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
-import SuppliersPage from '../modules/procurement/suppliers/pages/SuppliersPage';
+import { SuppliersPage } from '../modules/procurement/suppliers/pages/SuppliersPage';
 
 export const AppRoutes = () => {
   return (

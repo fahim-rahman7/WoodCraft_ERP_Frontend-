@@ -9,6 +9,7 @@ export { EmptyState } from './EmptyState';
 export { KpiCard } from './KpiCard';
 export { KpiGrid } from './KpiGrid';
 export { LegendDot } from './LegendDot';
+export { MetricCard } from './MetricCard';
 export { Notice } from './Notice';
 export { PageHeader } from './PageHeader';
 export { ProgressBar } from './ProgressBar';
