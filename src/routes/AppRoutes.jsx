@@ -22,6 +22,7 @@ import { BillingPage } from '../modules/billing/pages/BillingPage';
 // Common Error Pages
 import { UnauthorizedPage } from '../pages/UnauthorizedPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
+import SuppliersPage from '../modules/procurement/suppliers/pages/SuppliersPage';
 
 export const AppRoutes = () => {
   return (
@@ -45,6 +46,7 @@ export const AppRoutes = () => {
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/suppliers" element={<SuppliersPage />} />
           <Route path="/inventory" element={<StocksPage />} />
           {/* Billing & Subscription Route */}
           <Route path="/billing" element={<BillingPage />} />
